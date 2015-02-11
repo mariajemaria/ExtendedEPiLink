@@ -16,3 +16,6 @@ This is the part of packages.config with the EPiServer versions this plugin is t
   <package id="EPiServer.Packaging" version="3.2.0" targetFramework="net452" />
   <package id="EPiServer.Packaging.UI" version="3.2.0" targetFramework="net452" />
   <package id="EPiServer.Search" version="7.7.0" targetFramework="net452" />
+  
+WebAPI should be installed by calling:
+Install-Package 
