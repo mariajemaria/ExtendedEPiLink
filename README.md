@@ -18,4 +18,4 @@ This is the part of packages.config with the EPiServer versions this plugin is t
   <package id="EPiServer.Search" version="7.7.0" targetFramework="net452" />
   
 WebAPI should be installed by calling:
-Install-Package 
+Install-Package Microsoft.AspNet.WebApi
