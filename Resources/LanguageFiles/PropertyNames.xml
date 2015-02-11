@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<languages>
+  <language name="English" id="en">
+    <contenttypes>
+      <icontentdata>
+        <properties>          
+          <anchoronpage>
+            <caption>Anchor on page</caption>
+          </anchoronpage>
+        </properties>
+      </icontentdata>
+    </contenttypes>
+  </language>
+</languages>
