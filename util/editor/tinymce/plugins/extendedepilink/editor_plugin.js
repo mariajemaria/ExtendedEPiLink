@@ -43,7 +43,7 @@
 
                 //Find all Anchors in the document and add them to the Anchor list
                 var allAnchors = new Array();
-                var allLinks = $("a", ed.getDoc());
+                var allLinks = $("a[id],a[name]", ed.getDoc());
 
                 allAnchors.push({ text: "", value: "" });
                 allLinks.each(function (i) {
@@ -126,13 +126,12 @@
                     "dojo/on",
                     "dojo/when",
                     "dojo/dom-style",
+
                     "epi/dependency",
                     "epi/Url",
                     "epi/shell/widget/dialog/Dialog",
-
                     "epi-cms/ApplicationSettings",
                     "epi-cms/widget/LinkEditor",
-
                     // Resources
                     "epi/i18n!epi/cms/nls/episerver.cms.widget.editlink"
                 ], function (
@@ -141,13 +140,12 @@
                     on,
                     when,
                     domStyle,
+
                     dependency,
                     Url,
                     Dialog,
-
                     ApplicationSettings,
                     LinkEditor,
-
                     // Resources
                     resource
                 ) {
@@ -174,6 +172,7 @@
                     linkObject.target = findFrameId(frames, linkObject.targetName);
 
                     var linkEditor = new LinkEditor({
+                        baseClass: "epi-link-item",
                         modelType: ed.getParam('extendedepilinkmodel_type'),
                         hiddenFields: ["text"] // hide text field from UI
                     });
@@ -233,9 +232,6 @@
                         if (linkObject.anchorOnPage != null && linkObject.anchorOnPage.length > 0) {
                             anchorOnPageWidget.set("value", linkObject.anchorOnPage);
                         }
-                        domStyle.set(anchorOnPageWidget.domNode, {
-                            display: "block"
-                        });
                     };
 
                     var anchorOnPageWidget = null;
@@ -243,7 +239,7 @@
                         if (fieldname === "href") {
                             // in this case, widget is HyperLinkSelector
                             var hyperLinkSelector = widget;
-
+                            
                             // we try to get the wrappers, but they are sometimes undefined
                             var wrappers = hyperLinkSelector.get("wrappers");
 

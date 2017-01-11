@@ -1,3 +1,11 @@
 ﻿span.mceIcon.mce_extendedepilink {
     background: url(/ClientResources/Images/icons/extended-link-icon.gif) no-repeat;
 }
+
+.Sleek .epi-form-container__section__row .epi-form-container__section__row--field:nth-child(5) {
+    padding-top: 0 !important;
+}
+
+.Sleek .epi-form-container__section__row .epi-form-container__section__row--field:nth-child(4) {
+    padding-bottom: 0 !important;
+}

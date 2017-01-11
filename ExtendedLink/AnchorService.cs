@@ -11,7 +11,6 @@ namespace MarijasPlayground.ExtendedLink
 {
     public static class AnchorService
     {
-
         public static List<AnchorHeadingPair> GetOrSetFromPageIdForTinyMce(string pageIdWithVersion)
         {
             if (string.IsNullOrEmpty(pageIdWithVersion)) return null;

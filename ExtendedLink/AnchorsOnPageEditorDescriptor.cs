@@ -9,7 +9,7 @@ namespace MarijasPlayground.ExtendedLink
         public AnchorsOnPageEditorDescriptor()
         {
             SelectionFactoryType = typeof(PropertySettingsSelectionFactory);
-            ClientEditingClass = "epi-cms.contentediting.editors.SelectionEditor";
+            ClientEditingClass = "epi-cms/contentediting/editors/SelectionEditor";
             EditorConfiguration.Add("style", "width: 240px");
         }
     }

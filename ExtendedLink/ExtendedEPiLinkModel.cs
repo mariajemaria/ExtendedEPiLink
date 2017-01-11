@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Web.Mvc;
 using EPiServer;
 using EPiServer.Core;
 using EPiServer.DataAbstraction;
@@ -8,6 +9,7 @@ using EPiServer.ServiceLocation;
 using EPiServer.Shell;
 using EPiServer.SpecializedProperties;
 using EPiServer.Web;
+using EPiServer.Web.Mvc.Html;
 
 namespace MarijasPlayground.ExtendedLink
 {
@@ -15,6 +17,8 @@ namespace MarijasPlayground.ExtendedLink
     {
         private readonly IContentRepository _contentRepository;
         private readonly UIDescriptorRegistry _uiDescriptors;
+        private readonly IFrameRepository _frameRepository;
+        private readonly UrlHelper _urlHelper;
         private readonly string _typeIdentifier;
 
         [Display(
@@ -54,23 +58,28 @@ namespace MarijasPlayground.ExtendedLink
         [ScaffoldColumn(false)]
         public Dictionary<string, string> Attributes { get; set; }
 
-        public ExtendedEPiLinkModel()
-            : this(ServiceLocator.Current.GetInstance<IContentRepository>(), ServiceLocator.Current.GetInstance<UIDescriptorRegistry>())
+        public ExtendedEPiLinkModel() : this(
+            ServiceLocator.Current.GetInstance<IContentRepository>(),
+            ServiceLocator.Current.GetInstance<UIDescriptorRegistry>(),
+            ServiceLocator.Current.GetInstance<IFrameRepository>(),
+            ServiceLocator.Current.GetInstance<UrlHelper>())
         {
         }
 
-        public ExtendedEPiLinkModel(IContentRepository contentRepository, UIDescriptorRegistry uiDescriptors)
+        public ExtendedEPiLinkModel(IContentRepository contentRepository, UIDescriptorRegistry uiDescriptors, IFrameRepository frameRepository, UrlHelper urlHelper)
         {
             _contentRepository = contentRepository;
             _uiDescriptors = uiDescriptors;
+            _frameRepository = frameRepository;
+            _urlHelper = urlHelper;
             _typeIdentifier = _uiDescriptors.GetTypeIdentifiers(typeof(LinkItem)).FirstOrDefault();
         }
 
         public object ToClientModel(object serverModel)
         {
             var linkItemServerModel = (LinkItem)serverModel;
-            var frame = Frame.Load(linkItemServerModel.Target);
-            var nullable = frame != (Frame)null ? frame.ID : new int?();
+            var frame = _frameRepository.Load(linkItemServerModel.Target);
+            var nullable = frame != null ? frame.ID : new int?();
             var href = linkItemServerModel.Href;
             var hrefWithoutHash = href;
             var anchorOnPage = "";
@@ -91,6 +100,7 @@ namespace MarijasPlayground.ExtendedLink
                 TypeIdentifier = _typeIdentifier,
                 Attributes = linkItemServerModel.Attributes
             };
+
             ModifyIContentProperties(linkItemServerModel, clientModel);
             return clientModel;
         }
@@ -111,13 +121,13 @@ namespace MarijasPlayground.ExtendedLink
             linkItem.Href = !string.IsNullOrEmpty(linkModel.AnchorOnPage) ?
                 string.Format("{0}#{1}", linkModel.Href, linkModel.AnchorOnPage) :
                 linkModel.Href;
-            linkItem.Target = linkModel.Target.HasValue ? Frame.Load(linkModel.Target.Value).Name : null;
+            linkItem.Target = linkModel.Target.HasValue ? _frameRepository.Load(linkModel.Target.Value).Name : null;
             return linkItem;
         }
 
         private void ModifyIContentProperties(LinkItem serverModel, ExtendedEPiLinkModel clientModel)
         {
-            string mappedHref = serverModel.GetMappedHref();
+            var mappedHref = serverModel.GetMappedHref();
             if (string.IsNullOrEmpty(mappedHref))
                 return;
             var hrefWithoutHash = mappedHref;
@@ -131,13 +141,14 @@ namespace MarijasPlayground.ExtendedLink
 
             clientModel.Href = hrefWithoutHash;
             clientModel.AnchorOnPage = anchorOnPage;
-            var contentReference = PermanentLinkUtility.GetContentReference(new UrlBuilder(hrefWithoutHash));
+            var contentGuid = PermanentLinkUtility.GetGuid(hrefWithoutHash);
+            var contentReference = PermanentLinkUtility.FindContentReference(contentGuid);
             IContent content;
             if (!(contentReference != ContentReference.EmptyReference) || !_contentRepository.TryGet(contentReference, out content))
                 return;
             clientModel.TypeIdentifier = _uiDescriptors.GetTypeIdentifiers(content.GetType()).FirstOrDefault();
-
-            var absoluteUriBySettings = UriSupport.AbsoluteUrlBySettings(EPiServer.Cms.Shell.IContentExtensions.PublicUrl(content));
+            var friendlyUrl = _urlHelper.ContentUrl(content.ContentLink);
+            var absoluteUriBySettings = UriSupport.AbsoluteUrlBySettings(friendlyUrl);
             clientModel.PublicUrl = indexOfHash > 0 ?
                 string.Format("{0}#{1}", absoluteUriBySettings, anchorOnPage) :
                 absoluteUriBySettings;
