@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using EPiServer.Editor.TinyMCE;
+using System.Collections.Generic;
 
 namespace MarijasPlayground.ExtendedLink
 {
-    public class ExtendedEPiLinkConfigurationHandler : IDynamicConfigurationOptions
+    public class ExtendedEPiLinkConfigurationHandler
     {
         public IDictionary<string, object> GetConfigurationOptions()
         {
