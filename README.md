@@ -1,3 +1,5 @@
+Obsolete: http://mariajemaria.net/revisited-extending-episerver-link-tinymce-support-anchors-page
+
 This is a TinyMCE extended link button for EPiServer 10+. 
 
 It is basically the same button you get when you use standard epilink, but expanded to support linking to a specific place on the page instead of top of it.
